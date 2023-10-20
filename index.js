@@ -30,12 +30,65 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+
+     const brandCollection =client.db('brandDB').collection('brand')
+
+     app.post('/product',async(req,res)=>{
+        const newProduct =req.body
+        const result = await brandCollection.insertOne(newProduct)
+        res.send(result)
+     })
+     app.get('/product',async(req,res)=>{
+      const cursor =brandCollection.find()
+      const result =await cursor.toArray()
+      res.send(result)
+    })
+   
+    
+    //find single data by brand name
+
+    
+    app.get('/product/:brandName',async(req,res)=>{
+      const brandName =req.params.brandName
+      const query={brand_name:brandName}
+      const cursor =brandCollection.find(query)
+      const result =await cursor.toArray(cursor)
+      res.send(result)
+    })
+    
+    app.get('/products/:id',async(req,res)=>{
+      const id =req.params.id
+      const query={_id:new ObjectId(id)}
+      const result =await brandCollection.findOne(query)
+      res.send(result)
+    })
+  //update single data by _id
+
+  app.put('/products/:id',async(req,res)=>{
+    const id =req.params.id
+    const filter ={_id: new ObjectId(id)}
+    const options = { upsert: true };
+     const updateProduct=req.body;
+     const product ={
+    $set:{    
+      pname:updateProduct.pname,
+      brand_name:updateProduct.brand_name,
+      image:updateProduct.image,
+      type:updateProduct.type,
+      price:updateProduct.price,
+      description:updateProduct.description,
+      rating:updateProduct.rating
+    }
+  }
+  const result = await brandCollection.updateOne(filter,product,options)
+   res.send(result)
+  })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
