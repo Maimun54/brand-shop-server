@@ -32,12 +32,38 @@ async function run() {
     await client.connect();
 
      const brandCollection =client.db('brandDB').collection('brand')
+     const cartCollection =client.db('brandDB').collection('cart')
 
-     app.post('/product',async(req,res)=>{
+    
+     app.post('/myCart',async(req,res)=>{
         const newProduct =req.body
-        const result = await brandCollection.insertOne(newProduct)
+        const result = await cartCollection.insertOne(newProduct)
         res.send(result)
      })
+     app.get('/myCart',async(req,res)=>{
+      const cursor =cartCollection.find()
+      const result =await cursor.toArray()
+      res.send(result)
+    })
+    app.get('/myCarts/:id',async(req,res)=>{
+      const id =req.params.id
+      const query={_id:new ObjectId(id)}
+      const result =await cartCollection.findOne(query)
+      res.send(result)
+    })
+    // delete date from my cart page
+    // app.delete('/myCarts/:id',async(req,res)=>{
+    //   const id =req.params.id
+    //   const query ={_id: new ObjectId(id)}
+    //   const result = await coffeeCollection.deleteOne(query)
+    //   res.send(result)
+    // })
+
+    app.post('/product',async(req,res)=>{
+      const newProduct =req.body
+      const result = await brandCollection.insertOne(newProduct)
+      res.send(result)
+   })
      app.get('/product',async(req,res)=>{
       const cursor =brandCollection.find()
       const result =await cursor.toArray()
