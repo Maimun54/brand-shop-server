@@ -1,9 +1,10 @@
 
 const express = require('express')
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app =express();
 const cors = require('cors')
 require('dotenv').config()
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+
 const port =process.env.PORT || 5000
 
 //middleware 
@@ -29,7 +30,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
      const brandCollection =client.db('brandDB').collection('brand')
      const cartCollection =client.db('brandDB').collection('cart')
@@ -45,19 +46,21 @@ async function run() {
       const result =await cursor.toArray()
       res.send(result)
     })
-    app.get('/myCarts/:id',async(req,res)=>{
+    app.get('/myCart/:id',async(req,res)=>{
       const id =req.params.id
-      const query={_id:new ObjectId(id)}
+      const query={_id:id}
       const result =await cartCollection.findOne(query)
       res.send(result)
     })
     // delete date from my cart page
-    // app.delete('/myCarts/:id',async(req,res)=>{
-    //   const id =req.params.id
-    //   const query ={_id: new ObjectId(id)}
-    //   const result = await coffeeCollection.deleteOne(query)
-    //   res.send(result)
-    // })
+    
+    app.delete('/myCart/:id',async(req,res)=>{
+      const id =req.params.id
+      console.log(59,id)
+      const query ={_id: id}
+      const result = await cartCollection.deleteOne(query)
+      res.send(result)
+    })
 
     app.post('/product',async(req,res)=>{
       const newProduct =req.body
@@ -110,7 +113,7 @@ async function run() {
    res.send(result)
   })
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
