@@ -10,8 +10,7 @@ const port =process.env.PORT || 5000
 //middleware 
 app.use(cors())
 app.use(express.json());
-// brandShop407
-//vLt7j7G8TAQGTBp3
+
 
 
 
